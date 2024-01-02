@@ -221,7 +221,7 @@ async function run() {
 
     // user related api
 
-    app.get('/users', verifyToken, verifyAdmin, async (req, res) => {
+    app.get('/users', verifyToken,  async (req, res) => {
       const result = await userCollection.find().toArray()
       res.send(result)
     })
@@ -242,7 +242,7 @@ async function run() {
 
 
 
-    app.get('/users/admin/:email', verifyToken, verifyAdmin, async (req, res) => {
+    app.get('/users/admin/:email', verifyToken, async (req, res) => {
       try {
         const email = req.params.email;
 
@@ -264,22 +264,22 @@ async function run() {
       }
     });
 
-    app.get('/user/:email', async(req, res)=>{
-      const email = req.params.email;
-      const query = {email: email}
-      const result = await userCollection.findOne(query)
-      res.send(result);
-    })
+    // app.get('/user/:email', async(req, res)=>{
+    //   const email = req.params.email;
+    //   const query = {email: email}
+    //   const result = await userCollection.findOne(query)
+    //   res.send(result);
+    // })
 
 
-    app.delete('/users/:id', verifyToken, verifyAdmin, async (req, res) => {
+    app.delete('/users/:id', verifyToken,  async (req, res) => {
       const id = req.params.id
       const query = { _id: new ObjectId(id) }
       const result = await userCollection.deleteOne(query);
       res.send(result);
     })
 
-    app.patch('/users/admin/:id', async (req, res) => {
+    app.patch('/users/admin/:id',verifyToken,verifyAdmin, async (req, res) => {
       const id = req.params.id
       const filter = { _id: new ObjectId(id) };
       const updatedDoc = {
@@ -292,9 +292,9 @@ async function run() {
     })
 
 
-    await client.connect();
+    // await client.connect();
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
