@@ -150,12 +150,12 @@ async function run() {
       const updatedDoc = {
         $set: {
           name: doctor.name,
-            specialization: doctor.specialization,
-            qualification: doctor.qualification,
-            visit_fee: doctor.visit_fee,
-            image: doctor.image,
-            details: doctor.details,
-            schedule: doctor.schedule
+          specialization: doctor.specialization,
+          qualification: doctor.qualification,
+          visit_fee: doctor.visit_fee,
+          image: doctor.image,
+          details: doctor.details,
+          schedule: doctor.schedule
         }
       }
 
@@ -221,8 +221,41 @@ async function run() {
 
     // user related api
 
-    app.get('/users', verifyToken,  async (req, res) => {
+    app.get('/users', verifyToken, async (req, res) => {
       const result = await userCollection.find().toArray()
+      res.send(result)
+    })
+
+    // app.get('/users/:email', async (req, res) => {
+    //   const email = req.query.email;
+    //   const query = { email: email }
+    //   const result = await userCollection.find(query).toArray()
+    //   res.send(result)
+    // })
+
+    app.get('/users/:email', async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      console.log(query)
+      const result = await userCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    app.patch('/users/:email', async (req, res) => {
+      const user = req.body;
+      const email = req.params.email;
+      const filter = { email:email }
+      const updatedDoc = {
+        $set: {
+          name: user.name,
+          age:user.age,
+          bloodGroup: user.bloodGroup,
+          district: user.district,
+          upazila: user.upazila
+        }
+      }
+
+      const result = await userCollection.updateOne(filter, updatedDoc)
       res.send(result)
     })
 
@@ -239,7 +272,7 @@ async function run() {
       res.send(result)
     })
 
-
+    
 
 
     app.get('/users/admin/:email', verifyToken, async (req, res) => {
@@ -272,14 +305,14 @@ async function run() {
     // })
 
 
-    app.delete('/users/:id', verifyToken,  async (req, res) => {
+    app.delete('/users/:id', verifyToken, async (req, res) => {
       const id = req.params.id
       const query = { _id: new ObjectId(id) }
       const result = await userCollection.deleteOne(query);
       res.send(result);
     })
 
-    app.patch('/users/admin/:id',verifyToken,verifyAdmin, async (req, res) => {
+    app.patch('/users/admin/:id', verifyToken, verifyAdmin, async (req, res) => {
       const id = req.params.id
       const filter = { _id: new ObjectId(id) };
       const updatedDoc = {
